@@ -1,0 +1,316 @@
+:root {
+    --bg-primary: #4280e4;
+    --bg-secondary: #ffffff;
+    --bg-third: #6a9ae8;
+    --bg-hover-primary: #ffffff;
+    --bg-hover-secondary: #6a9ae8;
+    --text-primary: #ffffff;
+    --text-secondary: #000000;
+    --btn-primary: #4870f5;
+    --btn-hover-primary: #0850f8;
+    --btn-text-primary: #ffffff;
+    --btn-secondary: #f53131;
+    --btn-hover-secondary: #fd0101;
+    --btn-text-secondary: #ffffff;
+}
+
+/* Landing Page CSS */
+.toptab {
+    position: fixed;
+    top: 10px;
+    width: 1000px;
+    height: 60px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border-radius: 20px;
+}
+
+.toptab ul {
+    width: 800px;
+    justify-content: space-around;
+}
+
+.toptab li {
+    width: 100px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.toptab li:hover {
+    background-color: var(--bg-hover-primary);
+    color: var(--text-secondary);
+    border-radius: 20px;
+}
+
+.content {
+    margin-top: 100px;
+    width: 1200px;
+    height: auto;
+    background-color: var(--bg-third);
+    color: var(--text-primary);
+    border-radius: 20px;
+    padding: 40px;
+    gap: 30px;
+}
+
+.title {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    width: 1000px;
+    height: 50px;
+    gap: 10px;
+    border-radius: 20px;
+}
+
+.title h1 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.title h2 {
+    font-size: 16px;
+    font-style: italic;
+}
+
+.describe {
+    width: 1100px;
+    height: auto;
+    border-radius: 20px;
+    padding: 20px;
+    font-size: 20px;
+}
+
+.perchase {
+    width: 1200px;
+    height: 80px;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    gap: 300px;
+}
+
+.btn1,
+.btn2 {
+    border-radius: 20px;
+}
+
+.btn1 {
+    background-color: var(--btn-primary);
+    color: var(--btn-text-primary);
+    width: 200px;
+    height: 60px;
+}
+
+.btn2 {
+    background-color: var(--btn-secondary);
+    color: var(--btn-text-secondary);
+    width: 150px;
+    height: 60px;
+}
+
+/* Layout CSS */
+
+.sidebar {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 20px;
+}
+
+.user-info {
+    gap: 10px;
+    padding: 6px;
+}
+
+.user-info .logo {
+    width: 50px;
+}
+
+.user-info span {
+    font-size: 16px;
+}
+
+.user-detail {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    width: 200px;
+    height: auto;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    display: none; /* Mặc định ẩn */
+}
+
+.visible {
+    display: block; /* Hiển thị khi toggle */
+}
+
+.tag {
+    padding: 10px 30px;
+}
+
+.tag:hover {
+    background-color: var(--bg-hover-primary);
+    color: var(--text-secondary);
+    border-radius: 20px;
+}
+
+.main-content {
+    margin-left: 250px; /* Để tránh bị sidebar che khuất */
+    padding: 20px;
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    min-height: 100vh;
+}
+
+.cycle-title {
+    justify-content: space-between;
+    padding: 0 20px;
+    margin: 50px 0;
+}
+
+h1 {
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.cycle-title a {
+    background-color: var(--btn-primary);
+    color: var(--btn-text-secondary);
+    border-radius: 20px;
+    width: 150px;
+    height: 50px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.cycle-title button:hover {
+    background-color: var(--btn-hover-primary);
+    color: var(--text-primary);
+}
+
+.table-custom {
+    border: 2px solid #4b5563; /* Matches border-gray-600 */
+}
+
+.table-custom th,
+.table-custom td {
+    border: 2px solid #4b5563; /* Prominent borders for clarity */
+    font-size: 0.95rem; /* Slightly smaller text for readability */
+}
+
+.table-custom th {
+    background-color: #d1d5db; /* Matches bg-gray-300 */
+    color: #111827; /* Matches text-gray-900 */
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.table-custom td {
+    color: #1f2937; /* Dark text for contrast */
+    /* width: 25%; */
+}
+
+.btn-action {
+    transition: background-color 0.2s ease;
+    padding: 0 10px;
+    margin: 10px;
+    /* width: 60px; */
+}
+
+.btn-action-view {
+    background-color: var(--bg-primary); /* #4280e4 */
+    color: var(--text-primary); /* #ffffff */
+}
+
+.btn-action-view:hover {
+    background-color: var(--bg-third); /* #6a9ae8 */
+}
+
+.btn-action-edit {
+    background-color: #eab308; /* Yellow, matching previous edit button */
+    color: var(--text-secondary); /* #000000 */
+}
+
+.btn-action-edit:hover {
+    background-color: #ca8a04; /* Darker yellow on hover */
+}
+
+.btn-action-delete {
+    background-color: var(--btn-secondary); /* #f53131 */
+    color: var(--btn-text-secondary); /* #ffffff */
+}
+
+.btn-action-delete:hover {
+    background-color: var(--btn-hover-secondary); /* #fd0101 */
+}
+
+.main-form {
+    background-color: var(--bg-third);
+    color: var(--text-primary);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    gap: 20px;
+}
+
+.form-control {
+    background-color: #f9fafb; /* Light gray background for inputs */
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+    padding: 0 10px;
+}
+
+.form-control:focus {
+    outline: none;
+    border: none;
+    box-shadow: 0 0 0 2px var(--bg-primary); /* Matches focus:ring-[var(--bg-primary)] */
+}
+
+textarea.form-control {
+    resize: vertical; /* Allows vertical resizing only */
+}
+
+.btn-primary {
+    background-color: var(--btn-primary);
+    color: var(--btn-text-primary);
+    transition: background-color 0.2s ease;
+    width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-primary:hover {
+    background-color: var(--btn-hover-primary);
+}
+
+.btn-secondary {
+    background-color: var(--btn-secondary);
+    color: var(--btn-text-secondary);
+    transition: background-color 0.2s ease;
+    width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-secondary:hover {
+    background-color: var(--btn-hover-secondary);
+}
+
+/* Profile Page CSS */
+
+.section-title {
+    font-size: 24px;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+/* OKR Page CSS */
