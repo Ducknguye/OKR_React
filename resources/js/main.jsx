@@ -364,64 +364,86 @@ function ProfilePage({ embedded = false }) {
 
     return (
         <div className={embedded ? "p-0" : "px-4 py-6"}>
-            <div className="mx-auto w-full max-w-2xl">
-                <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-                    <h2 className="text-2xl font-extrabold text-slate-900 mb-6">Hồ sơ cá nhân</h2>
-
-                    <form onSubmit={updateProfile} className="space-y-6">
-                        {/* Avatar */}
-                        <div className="flex items-center gap-6">
-                            <div className="relative">
+            <div className="mx-auto w-full max-w-3xl">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Left Section - User Info Display */}
+                    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <div className="text-center">
+                            <div className="relative inline-block">
                                 <img
                                     src={avatarPreview || '/default-avatar.png'}
                                     alt="Avatar"
-                                    className="h-20 w-20 rounded-full object-cover border-2 border-slate-200"
+                                    className="h-24 w-24 rounded-full object-cover border-2 border-blue-200 mx-auto"
                                 />
-                                <label className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-1 cursor-pointer hover:bg-blue-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                                    </svg>
-                                    <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-                                </label>
                             </div>
+                            <h3 className="text-xl font-bold text-slate-900 mt-4">{formData.full_name || 'Admin'}</h3>
+                            <p className="text-slate-600 mt-1">{formData.email}</p>
+                        </div>
+                    </div>
+
+                    {/* Right Section - Profile Form */}
+                    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <h2 className="text-xl font-bold text-slate-900 mb-6">Chỉnh sửa hồ sơ</h2>
+
+                        <form onSubmit={updateProfile} className="space-y-6">
+                            {/* Full Name Field */}
                             <div>
-                                <h3 className="text-lg font-semibold text-slate-900">{formData.full_name || 'Chưa có tên'}</h3>
-                                <p className="text-slate-600">{formData.email}</p>
+                                <label className="mb-2 block text-sm font-medium text-slate-700">Họ và tên</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg className="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={formData.full_name}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                                        className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Form fields */}
-                        <div>
-                            <label className="mb-1 block text-sm font-medium text-slate-700">Họ và tên</label>
-                            <input
-                                type="text"
-                                value={formData.full_name}
-                                onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                                className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
+                            {/* Avatar Upload Field */}
+                            <div>
+                                <label className="mb-2 block text-sm font-medium text-slate-700">Ảnh đại diện</label>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex-1 border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
+                                        <div className="flex items-center justify-center gap-2 text-slate-500">
+                                            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                                            </svg>
+                                            <span className="text-sm">Chọn ảnh (JPG, PNG, GIF ≤ 2MB)</span>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => document.querySelector('input[type="file"]').click()}
+                                        className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+                                    >
+                                        Tải lên
+                                    </button>
+                                </div>
+                            </div>
 
-                        <div>
-                            <label className="mb-1 block text-sm font-medium text-slate-700">Email</label>
-                            <input
-                                type="email"
-                                value={formData.email}
-                                disabled
-                                className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-slate-500"
-                            />
-                            <p className="mt-1 text-xs text-slate-500">Email không thể thay đổi</p>
-                        </div>
-
-                        <div className="flex justify-end gap-2">
-                            <button
-                                type="submit"
-                                className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow hover:opacity-95"
-                            >
-                                Cập nhật hồ sơ
-                            </button>
-                        </div>
-                    </form>
+                            {/* Update Button */}
+                            <div className="flex justify-end">
+                                <button
+                                    type="submit"
+                                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-lg font-medium hover:opacity-95 transition-opacity"
+                                >
+                                    Cập nhật
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -929,52 +951,54 @@ function CyclesPage({ embedded = false }) {
                     <h3 className="text-lg font-semibold text-slate-900">Quản lý chu kỳ</h3>
                     <button onClick={openCreateModal} className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow hover:bg-blue-700">+ Tạo chu kỳ</button>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="border-b border-slate-100 bg-slate-50">
-                            <tr>
-                                <th className="px-4 py-3">Tên chu kỳ</th>
-                                <th className="px-4 py-3">Ngày bắt đầu</th>
-                                <th className="px-4 py-3">Ngày kết thúc</th>
-                                <th className="px-4 py-3">Trạng thái</th>
-                                <th className="px-4 py-3">Mô tả</th>
-                                <th className="px-4 py-3 text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {loading && (<tr><td colSpan={6} className="px-4 py-6 text-center text-slate-500">Đang tải...</td></tr>)}
-                            {!loading && cycles.length === 0 && (<tr><td colSpan={6} className="px-4 py-6 text-center text-slate-500">Không có kết quả</td></tr>)}
+                <div className="p-6">
+                    {loading && (
+                        <div className="text-center py-8 text-slate-500">Đang tải...</div>
+                    )}
+                    {!loading && cycles.length === 0 && (
+                        <div className="text-center py-8 text-slate-500">Không có kết quả</div>
+                    )}
+                    {!loading && cycles.length > 0 && (
+                        <div className="space-y-4">
                             {cycles.map((cycle) => (
-                                <tr key={cycle.cycle_id} className="hover:bg-slate-50">
-                                    <td className="px-4 py-3 font-medium text-slate-900">{cycle.cycle_name || 'N/A'}</td>
-                                    <td className="px-4 py-3 text-slate-600">{cycle.start_date || 'N/A'}</td>
-                                    <td className="px-4 py-3 text-slate-600">{cycle.end_date || 'N/A'}</td>
-                                    <td className="px-4 py-3">
-                                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                                            cycle.status === 'active'
-                                                ? 'bg-emerald-100 text-emerald-800'
-                                                : 'bg-red-100 text-red-800'
-                                        }`}>
-                                            {cycle.status === 'active' ? 'Đang hoạt động' : 'Không hoạt động'}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 text-slate-600">{cycle.description || 'N/A'}</td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex justify-center gap-1">
-                                            <button onClick={() => openViewModal(cycle)} className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Xem</button>
-                                            <button onClick={() => openEditModal(cycle)} className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Sửa</button>
-                                            <button onClick={() => openDeleteModal(cycle)} className="rounded-lg border border-red-200 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50 flex items-center gap-1">
+                                <div key={cycle.cycle_id} className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => window.location.href = `/cycles/${cycle.cycle_id}/detail`}>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-3">
+                                                <h3 className="text-lg font-semibold text-slate-900">{cycle.cycle_name || 'N/A'}</h3>
+                                                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                                                    cycle.status === 'active'
+                                                        ? 'bg-blue-100 text-blue-800'
+                                                        : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                    {cycle.status === 'active' ? 'Active' : 'Inactive'}
+                                                </span>
+                                            </div>
+                                            <div className="mt-2 text-sm text-slate-600">
+                                                <div className="flex items-center gap-4">
+                                                    <span>📅 Bắt đầu: {cycle.start_date || 'N/A'}</span>
+                                                    <span>📅 Kết thúc: {cycle.end_date || 'N/A'}</span>
+                                                </div>
+                                                {cycle.description && (
+                                                    <div className="mt-1 text-slate-500">{cycle.description}</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                            <button onClick={() => openViewModal(cycle)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Xem</button>
+                                            <button onClick={() => openEditModal(cycle)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Sửa</button>
+                                            <button onClick={() => openDeleteModal(cycle)} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 flex items-center gap-1">
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
                                                     <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                                                 </svg>
                                                 Xóa
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </div>
                             ))}
-                        </tbody>
-                    </table>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -1384,9 +1408,14 @@ function UsersPage({ embedded = false }) {
                                     </td>
                                     <td className="px-4 py-3">
                                         <div className="flex justify-center gap-1">
-                                            <button onClick={() => openViewModal(user)} className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Xem</button>
-                                            <button onClick={() => openEditModal(user)} className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Sửa</button>
-                                            <button onClick={() => openDeleteModal(user)} className="rounded-lg border border-red-200 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50">Xóa</button>
+                                            {/* Ẩn tất cả button nếu user hiện tại là admin */}
+                                            {window.__USER__?.role_name !== 'Admin' && (
+                                                <>
+                                                    {/* Chỉ hiện Sửa và Xóa cho user khác, bỏ Xem */}
+                                                    <button onClick={() => openEditModal(user)} className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Sửa</button>
+                                                    <button onClick={() => openDeleteModal(user)} className="rounded-lg border border-red-200 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50">Xóa</button>
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
@@ -2467,7 +2496,6 @@ function DepartmentsPage() {
                                 <td className="px-3 py-2 text-slate-600">{d.d_description || '—'}</td>
                                 <td className="px-3 py-2">
                                     <div className="flex gap-2">
-                                        <button onClick={()=>openView(d.department_id)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold md:text-sm">Xem</button>
                                         <button onClick={()=>{ setForm({ id:d.department_id, d_name:d.d_name||'', d_description:d.d_description||''}); setOpen(true); }} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold md:text-sm">Sửa</button>
                                         <button onClick={()=>setConfirmId(d.department_id)} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-600 md:text-sm">Xóa</button>
                                     </div>
@@ -2528,6 +2556,183 @@ function DepartmentsPage() {
 }
 
 
+// Cycle Detail Component
+function CycleDetailPage() {
+    const [cycle, setCycle] = useState(null);
+    const [objectives, setObjectives] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [openCreateObjective, setOpenCreateObjective] = useState(false);
+    const [expandedObjectives, setExpandedObjectives] = useState(new Set());
+
+    useEffect(() => {
+        const pathParts = window.location.pathname.split('/');
+        const cycleId = pathParts[pathParts.length - 2]; // /cycles/{id}/detail
+
+        const fetchCycleDetail = async () => {
+            try {
+                const res = await fetch(`/cycles/${cycleId}/detail`, {
+                    headers: { 'Accept': 'application/json' },
+                    credentials: 'same-origin'
+                });
+                const result = await res.json();
+                if (result.success) {
+                    setCycle(result.data.cycle);
+                    setObjectives(result.data.objectives);
+                }
+            } catch (error) {
+                console.error('Error fetching cycle detail:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCycleDetail();
+    }, []);
+
+    const toggleObjective = (objectiveId) => {
+        setExpandedObjectives(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(objectiveId)) {
+                newSet.delete(objectiveId);
+            } else {
+                newSet.add(objectiveId);
+            }
+            return newSet;
+        });
+    };
+
+    const handleKeyResultClick = (krId, objectiveId) => {
+        // Navigate to Key Result detail page
+        window.location.href = `/objectives/${objectiveId}/key-results/${krId}`;
+    };
+
+    if (loading) {
+        return (
+            <div className="px-4 py-6">
+                <div className="mx-auto w-full max-w-4xl">
+                    <div className="text-center py-8 text-slate-500">Đang tải...</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!cycle) {
+        return (
+            <div className="px-4 py-6">
+                <div className="mx-auto w-full max-w-4xl">
+                    <div className="text-center py-8 text-slate-500">Không tìm thấy chu kỳ</div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="px-4 py-6">
+            <div className="mx-auto w-full max-w-4xl">
+                {/* Cycle Header */}
+                <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h1 className="text-2xl font-bold text-slate-900">{cycle.cycle_name}</h1>
+                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                            cycle.status === 'active'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-red-100 text-red-800'
+                        }`}>
+                            {cycle.status === 'active' ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                    <div className="space-y-2 text-sm text-slate-600">
+                        <div>Ngày bắt đầu: {cycle.start_date}</div>
+                        <div>Ngày kết thúc: {cycle.end_date}</div>
+                        <div>Mô tả: {cycle.description || 'Không có mô tả'}</div>
+                    </div>
+                </div>
+
+                {/* Add Objective Button */}
+                <div className="text-center mb-6">
+                    <button
+                        onClick={() => setOpenCreateObjective(true)}
+                        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                    >
+                        Thêm Objective
+                    </button>
+                </div>
+
+                {/* Objectives List */}
+                <div className="space-y-4">
+                    {objectives.length === 0 ? (
+                        <div className="text-center py-8 text-slate-500">Chưa có objective nào</div>
+                    ) : (
+                        objectives.map((objective) => (
+                            <div key={objective.objective_id} className="bg-slate-50 border border-slate-200 rounded-lg p-4 shadow-sm">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div
+                                        className="flex items-center gap-3 cursor-pointer flex-1"
+                                        onClick={() => toggleObjective(objective.objective_id)}
+                                    >
+                                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                                            {objective.obj_title?.charAt(0) || 'O'}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-slate-900">{objective.obj_title}</h3>
+                                            <p className="text-sm text-slate-500">{objective.description || 'Không có mô tả'}</p>
+                                        </div>
+                                        <div className="ml-auto">
+                                            <svg
+                                                className={`w-5 h-5 text-slate-400 transition-transform ${
+                                                    expandedObjectives.has(objective.objective_id) ? 'rotate-180' : ''
+                                                }`}
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors ml-3">
+                                        Thêm Key Result
+                                    </button>
+                                </div>
+
+                                {/* Key Results - Show when expanded */}
+                                {expandedObjectives.has(objective.objective_id) && objective.key_results && objective.key_results.length > 0 && (
+                                    <div className="ml-11 space-y-2">
+                                        {objective.key_results.map((kr) => (
+                                            <div
+                                                key={kr.kr_id}
+                                                className="bg-white border border-slate-200 rounded-lg p-3 cursor-pointer hover:bg-slate-50 transition-colors"
+                                                onClick={() => handleKeyResultClick(kr.kr_id, objective.objective_id)}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <h4 className="font-medium text-slate-900">{kr.kr_title}</h4>
+                                                        <p className="text-sm text-slate-500">{kr.status || 'In progress'}</p>
+                                                    </div>
+                                                    <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Show message if no Key Results */}
+                                {expandedObjectives.has(objective.objective_id) && (!objective.key_results || objective.key_results.length === 0) && (
+                                    <div className="ml-11 text-sm text-slate-500 py-2">
+                                        Chưa có Key Result nào
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 // Hook UsersPage into SPA routing
 function App() {
     const initialTab = useMemo(() => {
@@ -2563,9 +2768,12 @@ function App() {
                         {activeTab === 'pricing' && <Pricing />}
                     </>
                 )}
-                {activeTab === 'dashboard' && !window.location.pathname.startsWith('/objectives') && <Dashboard />}
+                {activeTab === 'dashboard' && !window.location.pathname.startsWith('/objectives') && !window.location.pathname.includes('/cycles/') && <Dashboard />}
                 {window.location.pathname.startsWith('/objectives') ? (
                     <ObjectivesPage />
+                ) : null}
+                {window.location.pathname.includes('/cycles/') && window.location.pathname.includes('/detail') ? (
+                    <CycleDetailPage />
                 ) : null}
             </main>
             {activeTab !== 'dashboard' && <Footer />}
