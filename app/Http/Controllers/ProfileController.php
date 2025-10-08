@@ -8,13 +8,28 @@ use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
-    public function show()
+    public function show(Request $request)
     {
         $user = Auth::user();
         if (!$user) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Bạn cần đăng nhập để xem hồ sơ.'], 401);
+            }
             return redirect()->route('login')->withErrors('Bạn cần đăng nhập để xem hồ sơ.');
         }
-        return view('profile.show', compact('user'));
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'name' => $user->full_name,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar_url,
+                ]
+            ]);
+        }
+
+        return view('app');
     }
 
     public function update(Request $request)

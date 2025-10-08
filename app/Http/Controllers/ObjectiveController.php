@@ -16,11 +16,13 @@ class ObjectiveController extends Controller
     /**
      * Display a listing of objectives
      */
-    public function index(): View
+    public function index()
     {
-        $objectives = Objective::with(['user', 'cycle', 'keyResults'])
-                               ->paginate(10);
-        return view('objectives.index', compact('objectives'));
+        $objectives = Objective::with(['user', 'cycle', 'keyResults'])->paginate(10);
+        if (request()->wantsJson()) {
+            return response()->json(['data' => $objectives]);
+        }
+        return view('app');
     }
 
     /**
@@ -44,7 +46,7 @@ class ObjectiveController extends Controller
     /**
      * Store a newly created objective
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $user = Auth::user();
         $level = $request->input('level', 'Cá nhân');
@@ -65,6 +67,12 @@ class ObjectiveController extends Controller
 
         // Kiểm tra quyền
         if (!in_array($level, $allowedLevels)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn không có quyền tạo OKR cấp ' . $level . '.'
+                ], 403);
+            }
             return redirect()->back()
                 ->withErrors(['level' => 'Bạn không có quyền tạo OKR cấp ' . $level . '.'])
                 ->withInput();
@@ -91,49 +99,75 @@ class ObjectiveController extends Controller
             'key_results.*.progress_percent' => 'nullable|numeric|min:0|max:100',
         ]);
 
-        // Tạo Objective và Key Results trong transaction
-        DB::transaction(function() use ($validated, $request) {
-            $objectiveData = [
-                'obj_title' => $validated['obj_title'],
-                'level' => $validated['level'],
-                'description' => $validated['description'],
-                'status' => $validated['status'],
-                'progress_percent' => $validated['progress_percent'] ?? 0,
-                'user_id' => Auth::id() ?? 2,
-                'cycle_id' => $validated['cycle_id'],
-            ];
-            $objective = Objective::create($objectiveData);
-
-            $keyResults = $request->input('key_results', []);
-            foreach ($keyResults as $kr) {
-                if (empty($kr['kr_title'])) continue;
-
-                $keyResultData = [
-                    'kr_title' => $kr['kr_title'],
-                    'target_value' => $kr['target_value'],
-                    'current_value' => $kr['current_value'] ?? 0,
-                    'unit' => $kr['unit'],
-                    'status' => $kr['status'] ?? 'active',
-                    'weight' => $kr['weight'] ?? 0,
-                    'progress_percent' => $kr['progress_percent'] ?? 0,
-                    'objective_id' => $objective->objective_id,
-                    'cycle_id' => $objective->cycle_id,
+        try {
+            // Tạo Objective và Key Results trong transaction
+            $objective = DB::transaction(function() use ($validated, $request) {
+                $objectiveData = [
+                    'obj_title' => $validated['obj_title'],
+                    'level' => $validated['level'],
+                    'description' => $validated['description'],
+                    'status' => $validated['status'],
+                    'progress_percent' => $validated['progress_percent'] ?? 0,
+                    'user_id' => Auth::id() ?? 2,
+                    'cycle_id' => $validated['cycle_id'],
                 ];
-                KeyResult::create($keyResultData);
-            }
-        });
+                $objective = Objective::create($objectiveData);
 
-        return redirect()->route('cycles.show', $validated['cycle_id'])
-            ->with('success', 'Objective created successfully!');
+                $keyResults = $request->input('key_results', []);
+                foreach ($keyResults as $kr) {
+                    if (empty($kr['kr_title'])) continue;
+
+                    $keyResultData = [
+                        'kr_title' => $kr['kr_title'],
+                        'target_value' => $kr['target_value'],
+                        'current_value' => $kr['current_value'] ?? 0,
+                        'unit' => $kr['unit'],
+                        'status' => $kr['status'] ?? 'active',
+                        'weight' => $kr['weight'] ?? 0,
+                        'progress_percent' => $kr['progress_percent'] ?? 0,
+                        'objective_id' => $objective->objective_id,
+                        'cycle_id' => $objective->cycle_id ?? null,
+                    ];
+                    KeyResult::create($keyResultData);
+                }
+
+                return $objective;
+            });
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Mục tiêu đã được tạo thành công!',
+                    'data' => $objective->load('keyResults')
+                ]);
+            }
+
+            return redirect()->route('cycles.show', $validated['cycle_id'])
+                ->with('success', 'Objective created successfully!');
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi tạo mục tiêu: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Có lỗi xảy ra khi tạo mục tiêu.'])
+                ->withInput();
+        }
     }
 
     /**
      * Display the specified objective
      */
-    public function show(string $id): View
+    public function show(string $id)
     {
         $objective = Objective::with('keyResults')->findOrFail($id);
-        return view('objectives.show', compact('objective'));
+        if (request()->wantsJson()) {
+            return response()->json(['data' => $objective]);
+        }
+        return view('app');
     }
 
     /**
@@ -142,37 +176,77 @@ class ObjectiveController extends Controller
     public function edit(string $id): View
     {
         $objective = Objective::findOrFail($id);
-        return view('objectives.edit', compact('objective'));
+        return view('app');
     }
 
     /**
      * Update the specified objective
      */
-    public function update(Request $request, string $id): RedirectResponse
+    public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            'title'       => 'required|string|max:255',
+            'obj_title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'status'      => 'required|in:draft,active,completed',
-            'progress'    => 'nullable|numeric|min:0|max:100'
+            'status' => 'required|in:draft,active,completed',
+            'progress_percent' => 'nullable|numeric|min:0|max:100'
         ]);
 
-        $objective = Objective::findOrFail($id);
-        $objective->update($validated);
+        try {
+            $objective = Objective::findOrFail($id);
+            $objective->update($validated);
 
-        return redirect()->route('objectives.index')
-            ->with('success', 'Objective updated successfully!');
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Mục tiêu đã được cập nhật thành công!',
+                    'data' => $objective
+                ]);
+            }
+
+            return redirect()->route('objectives.index')
+                ->with('success', 'Objective updated successfully!');
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi cập nhật mục tiêu: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Có lỗi xảy ra khi cập nhật mục tiêu.'])
+                ->withInput();
+        }
     }
 
     /**
      * Remove the specified objective
      */
-    public function destroy(string $id): RedirectResponse
+    public function destroy(string $id)
     {
-        $objective = Objective::findOrFail($id);
-        $objective->delete();
+        try {
+            $objective = Objective::findOrFail($id);
+            $objective->delete();
 
-        return redirect()->route('objectives.index')
-            ->with('success', 'Objective deleted successfully!');
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Mục tiêu đã được xóa thành công!'
+                ]);
+            }
+
+            return redirect()->route('objectives.index')
+                ->with('success', 'Objective deleted successfully!');
+        } catch (\Exception $e) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi xóa mục tiêu: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Có lỗi xảy ra khi xóa mục tiêu.']);
+        }
     }
 }

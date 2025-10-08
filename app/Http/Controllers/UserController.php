@@ -55,17 +55,49 @@ class UserController extends Controller
     }
 
     /**
-     * Cập nhật vai trò người dùng
+     * Tạo người dùng mới
+     */
+    public function store(Request $request)
+    {
+        // Middleware đã kiểm tra quyền Admin
+
+        $request->validate([
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'role_id' => 'required|exists:roles,role_id',
+            'department_id' => 'nullable|exists:departments,department_id',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $user = User::create($request->only(['full_name', 'email', 'role_id', 'department_id', 'status']));
+
+        // Clear cache when user is created
+        \Cache::forget('users_list');
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Tạo người dùng thành công!',
+                'data' => $user->load(['role', 'department'])
+            ]);
+        }
+
+        return redirect()->route('users.index')->with('success', 'Tạo người dùng thành công!');
+    }
+
+    /**
+     * Cập nhật người dùng
      */
     public function update(Request $request, $id)
     {
         // Middleware đã kiểm tra quyền Admin
 
-        // Chấp nhận cả role_id hoặc role (theo tên: admin/manager/member)
         $request->validate([
-            'role_id' => 'nullable|exists:roles,role_id',
-            'role' => 'nullable|string|in:admin,manager,member,Admin,Manager,Member',
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id . ',user_id',
+            'role_id' => 'required|exists:roles,role_id',
             'department_id' => 'nullable|exists:departments,department_id',
+            'status' => 'required|in:active,inactive',
         ]);
 
         $user = User::findOrFail($id);
@@ -86,40 +118,23 @@ class UserController extends Controller
             return redirect()->back()->withErrors('Bạn không thể thay đổi vai trò của chính mình.');
         }
 
-        $oldRole = $user->role ? $user->role->role_name : 'Chưa có vai trò';
-
-        $roleId = $request->role_id;
-        if (!$roleId && $request->filled('role')) {
-            $name = strtolower($request->role);
-            $roleId = Role::whereRaw('LOWER(role_name) = ?', [$name])->value('role_id');
-        }
-        if (!$roleId) {
-            if ($request->expectsJson()) {
-                return response()->json(['success' => false, 'message' => 'Thiếu role hoặc role_id hợp lệ.'], 422);
-            }
-            return redirect()->back()->withErrors('Thiếu role hoặc role_id hợp lệ.');
-        }
-
-        $user->role_id = $roleId;
-        $user->department_id = $request->department_id;
-        $user->save();
+        $user->update($request->only(['full_name', 'email', 'role_id', 'department_id', 'status']));
 
         // Clear cache when user is updated
         \Cache::forget('users_list');
 
         // Reload relationship để có thể truy cập role mới
-        $user->load('role');
-        $newRole = $user->role ? $user->role->role_name : 'Chưa có vai trò';
+        $user->load(['role', 'department']);
 
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => "Đã cập nhật vai trò của {$user->full_name} từ {$oldRole} thành {$newRole}."
+                'message' => 'Cập nhật người dùng thành công!',
+                'data' => $user
             ]);
         }
 
-        return redirect()->route('users.index')
-            ->with('success', "Đã cập nhật vai trò của {$user->full_name} từ {$oldRole} thành {$newRole}.");
+        return redirect()->route('users.index')->with('success', 'Cập nhật người dùng thành công!');
     }
 
     /**
@@ -184,18 +199,33 @@ class UserController extends Controller
 
         // Không cho phép xóa Admin
         if ($user->isAdmin()) {
+            if (request()->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Không thể xóa tài khoản Admin.'], 400);
+            }
             return redirect()->back()->withErrors('Không thể xóa tài khoản Admin.');
         }
 
         // Không cho phép xóa chính mình
         if ($user->user_id === Auth::id()) {
+            if (request()->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Bạn không thể xóa tài khoản của chính mình.'], 400);
+            }
             return redirect()->back()->withErrors('Bạn không thể xóa tài khoản của chính mình.');
         }
 
         $userName = $user->full_name;
         $user->delete();
 
-        return redirect()->route('users.index')
-            ->with('success', "Đã xóa người dùng {$userName}.");
+        // Clear cache when user is deleted
+        \Cache::forget('users_list');
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Đã xóa người dùng {$userName}."
+            ]);
+        }
+
+        return redirect()->route('users.index')->with('success', "Đã xóa người dùng {$userName}.");
     }
 }

@@ -73,6 +73,8 @@ Route::group(['middleware' => ['web', 'check.status', 'timezone']], function () 
     Route::get('/cycles/{cycle}/detail',[CycleController::class,'show']) -> name('cycles.show');
     Route::get('/cycles/create',[CycleController::class,'create']) -> middleware('auth','admin') -> name('cycles.create');
     Route::post('/cycles/create',[CycleController::class,'store']) -> middleware('auth','admin') -> name('cycles.store');
+    Route::put('/cycles/{cycle}',[CycleController::class,'update']) -> middleware('auth','admin') -> name('cycles.update');
+    Route::delete('/cycles/{cycle}',[CycleController::class,'destroy']) -> middleware('auth','admin') -> name('cycles.destroy');
 
     //Routes cho Department
     Route::resource('departments', DepartmentController::class);
@@ -86,6 +88,7 @@ Route::group(['middleware' => ['web', 'check.status', 'timezone']], function () 
             // Routes cho User Management (chỉ Admin)
             Route::middleware(['auth', 'admin'])->group(function () {
                 Route::get('/users', [UserController::class, 'index'])->name('users.index');
+                Route::post('/users', [UserController::class, 'store'])->name('users.store');
                 Route::get('/users/{id}/detail', [UserController::class, 'show'])->name('users.show');
                 Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
                 Route::put('/users/{id}/status', [UserController::class, 'updateStatus'])->name('users.updateStatus');
@@ -97,11 +100,11 @@ Route::group(['middleware' => ['web', 'check.status', 'timezone']], function () 
     // Route::get('/dashboard', [ObjectiveController::class, 'dashboard'])->name('dashboard');
 
     // Key Results Routes
-    Route::get('/objectives/{objective}/key-results', 
+    Route::get('/objectives/{objective}/key-results',
     [KeyResultController::class, 'index'])
     ->name('key_results.index');
 
-    Route::get('/objectives/{objective}/key-results/{key_result}', 
+    Route::get('/objectives/{objective}/key-results/{key_result}',
     [KeyResultController::class, 'show'])
     ->whereNumber('key_result')
     ->name('key_results.show');
@@ -115,6 +118,10 @@ Route::group(['middleware' => ['web', 'check.status', 'timezone']], function () 
     Route::post('/objectives/{objective}/key-results',
         [KeyResultController::class, 'store']
     )->name('key_results.store');
+
+    Route::put('/objectives/{objective}/key-results/{kr}',
+        [KeyResultController::class, 'update']
+    )->name('key_results.update');
 
     Route::delete('/objectives/{objective}/key-results/{kr}',
         [KeyResultController::class, 'destroy']

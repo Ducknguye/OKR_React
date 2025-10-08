@@ -402,8 +402,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="header-title">Create New Objective</h1>
-                    <p class="header-subtitle">Set a clear, measurable objective for your team</p>
+                    <h1 class="header-title">Tạo mục tiêu mới</h1>
+                    <p class="header-subtitle">Đặt mục tiêu rõ ràng, đo lường được cho đội ngũ của bạn</p>
                 </div>
             </div>
         </div>
@@ -412,8 +412,8 @@
         <div class="form-card">
             <!-- Form Header -->
             <div class="form-header">
-                <h2 class="form-header-title">Objective Details</h2>
-                <p class="form-header-subtitle">Fill in the information below to create your objective</p>
+                <h2 class="form-header-title">Thông tin mục tiêu</h2>
+                <p class="form-header-subtitle">Điền thông tin bên dưới để tạo mục tiêu</p>
             </div>
 
             <div class="form-body">
@@ -442,7 +442,7 @@
                     <!-- Objective Title -->
                     <div class="input-group">
                         <label for="obj_title" class="form-label">
-                            Objective Title <span class="required-asterisk">*</span>
+                            Tiêu đề mục tiêu <span class="required-asterisk">*</span>
                         </label>
                         <div class="relative">
                             <input type="text"
@@ -450,7 +450,7 @@
                                    name="obj_title"
                                    value="{{ old('obj_title') }}"
                                    class="form-input @error('obj_title') error @enderror"
-                                   placeholder="e.g., Increase quarterly revenue by 25%"
+                                   placeholder="Ví dụ: Tăng doanh thu quý thêm 25%"
                                    required>
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                 <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -471,13 +471,13 @@
                     <!-- Description -->
                     <div class="input-group">
                         <label for="description" class="form-label">
-                            Description
+                            Mô tả
                         </label>
                         <textarea id="description"
                                   name="description"
                                   rows="4"
                                   class="form-textarea @error('description') error @enderror"
-                                  placeholder="Provide more context about this objective...">{{ old('description') }}</textarea>
+                                  placeholder="Thêm mô tả chi tiết cho mục tiêu...">{{ old('description') }}</textarea>
                         @error('description')
                             <p class="error-text flex items-center">
                                 <svg class="error-icon" fill="currentColor" viewBox="0 0 20 20">
@@ -511,12 +511,12 @@
                     <!-- Status -->
                     <div class="input-group">
                         <label for="status" class="form-label">
-                            Status <span class="required-asterisk">*</span>
+                            Trạng thái <span class="required-asterisk">*</span>
                         </label>
                         <select id="status" name="status" class="form-select @error('status') error @enderror" required>
-                            <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                            <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Nháp</option>
+                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Đang thực hiện</option>
+                            <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
                         </select>
                         @error('status')
                             <p class="error-text flex items-center">
@@ -531,7 +531,7 @@
                     <!-- Progress Percent -->
                     <div class="input-group">
                         <label for="progress_percent" class="form-label">
-                            Progress Percent
+                            Tiến độ (%)
                         </label>
                         <input type="number"
                                id="progress_percent"
@@ -552,13 +552,13 @@
 
                     <!-- Submit Button -->
                     <div class="form-buttons">
-                        <a href="{{ route('cycles.show', $cycle_id) }}"
+                        <a href="{{ $cycle_id ? route('cycles.show', $cycle_id) : route('objectives.index') }}"
                            class="cancel-button">
-                            Cancel
+                            Hủy
                         </a>
                         <button type="submit"
                                 class="submit-button">
-                            Create Objective
+                            Tạo mục tiêu
                         </button>
                     </div>
                 </form>
